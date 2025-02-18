@@ -28,14 +28,24 @@ export default function Page() {
     const [taskDetails, setTaskDetails] = useState<{ title?: string }>({});
 
     useEffect(() => {
-        if (!taskId) return;
-
-        getTaskDetails(taskId)
-            .then((data) => {
-                setResult(data.result);
-                setTaskDetails(data.taskDetails);
-            })
-            .catch(console.error);
+        if (!taskId) return; // Don't fetch if taskId is invalid
+    
+        const fetchTaskDetails = () => {
+            getTaskDetails(taskId)
+                .then((data) => {
+                    setResult(data.result);
+                    setTaskDetails(data.taskDetails);
+                })
+                .catch(console.error);
+        };
+    
+        fetchTaskDetails();
+    
+        const intervalId = setInterval(fetchTaskDetails, 5000);
+    
+        return () => {
+            clearInterval(intervalId);
+        };
     }, [taskId]);
 
     return (
